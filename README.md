@@ -1,17 +1,19 @@
 dev environment
-----------------------------------------
+===============
 eclipse
-myEclipse
-github : https://github.com/qparrod
-
-
+window builder - eclipse plugin
+SWT libraries
+github : https://github.com/qparrod/qedit
 
 git commands and linked with github
 ----------------------------------------
+at init:
 git remote add origin https://github.com/qparrod/qedit.git
 git pull https://github.com/qparrod/qedit.git   // get file comitted (last in repository)
+
+to update file in git base:
 git status
-// modification
-git add XXX
-git commit -m "commit name"
+// do some modifications
+git add <files/dir>
+git commit -m "<commit name>"
 git push 
