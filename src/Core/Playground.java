@@ -43,7 +43,8 @@ public class Playground
     private static Shell shlQeditef;
     private static Display display;
     private static Text text_1;
-    static public String ROOT = "C:/users/qparrod/workspace/qedit2/store/";
+    public static String ROOT;
+    private static Tree tree_2;
     
     private static void open (Path file, Text text)
     {
@@ -51,7 +52,13 @@ public class Playground
         try (BufferedReader reader = Files.newBufferedReader(file, charset))
         {
             byte[] encoded = Files.readAllBytes(file);
-            text.setText(new String(encoded, charset));
+            String toPrint = new String(encoded, charset);
+            System.out.println("toPrint="+toPrint);
+            if ( null == text )
+            {
+                return;
+            }
+            text.setText(toPrint);
         }
         catch (IOException x)
         {
@@ -85,7 +92,18 @@ public class Playground
         new Label(composite_3, SWT.NONE);
         new Label(composite_3, SWT.NONE);
         
-        Tree tree_2 = new Tree(composite_3, SWT.BORDER);
+        text_1 = new Text( composite_3, SWT.WRAP | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        text_1.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
+                {
+                    System.out.println("Save File"); 
+                }
+            }
+        });
+        text_1.setBounds(161, 10, 321, 260);
+        
+        tree_2 = new Tree(composite_3, SWT.BORDER);
         // open recursively files already present in software repository
         QTree _tree = new QTree();
         _tree.setComposite(composite_3);
@@ -109,6 +127,15 @@ public class Playground
             
             public String findAbsolutePath(TreeItem tree, String path)
             {
+                if ( System.getProperty("os.name").startsWith("Linux") )
+                {
+                    ROOT = "/home/qparrod/workspace/qedit/store/";
+                }
+                else if ( System.getProperty("os.name").startsWith("Windows") )
+                {
+                    ROOT = "C:/users/qparrod/workspace/qedit2/store/";
+                }
+                
                 String str = ROOT + path;
                 
                 if(null == tree.getParentItem())
@@ -121,9 +148,15 @@ public class Playground
             
             public void mouseDoubleClick(MouseEvent event)
             {
-                //System.out.println("double clicked");
+                System.out.println("double clicked");
+                if ( tree_2 == null )
+                {
+                    System.out.println("tree_2 is null");
+                    return;
+                }
+                System.out.println("tree_2 is " + tree_2);
                 TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
-                if (dest !=null)
+                if (dest != null)
                 {
                     Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
                     System.out.println("open file "+ path.toString());
@@ -134,26 +167,12 @@ public class Playground
         tree_2.setTouchEnabled(true);
         tree_2.setBounds(10, 10, 145, 260);
         
-        Text text_1 = new Text( composite_3, SWT.WRAP | SWT.MULTI | SWT.BORDER | 
-                                             SWT.H_SCROLL | SWT.V_SCROLL);
-        text_1.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
-                {
-                    System.out.println("Save File"); 
-                }
-            }
-        });
-        text_1.setBounds(161, 10, 321, 260);
         GridData gridData = new GridData( GridData.HORIZONTAL_ALIGN_FILL | 
                                           GridData.VERTICAL_ALIGN_FILL);
         gridData.grabExcessVerticalSpace = true;
         
-                text_1.setLayoutData(gridData);
-                _tree.setOutput(text_1);
-        
-        
+        text_1.setLayoutData(gridData);
+        _tree.setOutput(text_1);
         
         TabItem tbtmMachines = new TabItem(tabFolder, SWT.NONE);
         tbtmMachines.setText("Machines");

@@ -14,6 +14,8 @@ import java.io.File;
 
 import Logging.Debug;
 
+import java.lang.System;
+
 public class QTree
 {
     private Text text;
@@ -63,8 +65,16 @@ public class QTree
 
     public void open(Tree tree)
     {
-        Debug.verbose("open tree test");
-        String ROOT = "G:/repo_qedit/store";
+        Debug.verbose("open tree");
+        String ROOT = "";
+        if ( System.getProperty("os.name").startsWith("Linux") )
+        {
+            ROOT = "/home/qparrod/workspace/qedit/store";
+        }
+        else if ( System.getProperty("os.name").startsWith("Windows") )
+        {
+            ROOT = "G:/repo_qedit/store";
+        }
         File root = new File(ROOT);
         createNode(root, tree);
     }
@@ -74,7 +84,12 @@ public class QTree
         this.text = text;
         if (this.text == null)
         {
-                System.out.println("test");
+            System.out.println("test");
         }
+    }
+    
+    public void setComposite(Composite comp)
+    {
+        
     }
 };
