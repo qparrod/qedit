@@ -1,3 +1,4 @@
+package Core;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
@@ -19,29 +20,142 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
 
+// manuel
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.graphics.Point;
+
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.FileSystem;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+
+
+
 public class Playground
 {
     private static Text txtTest;
     private static Text text;
     private static Shell shlQeditef;
     private static Display display;
+    private static Text text_1;
+    static public String ROOT = "C:/users/qparrod/workspace/qedit2/store/";
+    
+    private static void open (Path file, Text text)
+    {
+        Charset charset = Charset.forName("US-ASCII");
+        try (BufferedReader reader = Files.newBufferedReader(file, charset))
+        {
+            byte[] encoded = Files.readAllBytes(file);
+            text.setText(new String(encoded, charset));
+        }
+        catch (IOException x)
+        {
+            System.err.format("IOException: %s%n.", x);
+        }
+    }
 
     public static void main(String[] args)
     {
         System.out.println("qedit debug mode");
         display = Display.getDefault();
         shlQeditef = new Shell();
-        shlQeditef.setSize(522, 363);
+        shlQeditef.setLayout(new GridLayout(1, false));
         shlQeditef.setText("Qedit");
         
         Composite composite = new Composite(shlQeditef, SWT.NONE);
-        composite.setBounds(10, 10, 500, 318);
+        composite.setLayout(new GridLayout(1, true));
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
-        tabFolder.setBounds(0, 0, 500, 308);
+        tabFolder.setLayout(new GridLayout(2, true));
+        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("New Item");
+        
+        Composite composite_3 = new Composite(tabFolder, SWT.NONE);
+        composite_3.setLayout(new GridLayout(2, true));
+        composite_3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        tabItem.setControl(composite_3);
+        new Label(composite_3, SWT.NONE);
+        new Label(composite_3, SWT.NONE);
+        
+        Tree tree_2 = new Tree(composite_3, SWT.BORDER);
+        // open recursively files already present in software repository
+        QTree _tree = new QTree();
+        _tree.setComposite(composite_3);
+        _tree.open(tree_2);
+        
+        tree_2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                int buttonType = e.button;
+                switch(buttonType)
+                {
+                    case 1:
+                        //System.out.println("left button clicked");
+                        break;
+                    case 3:
+                        //System.out.println("right button clicked");
+                        // swing lib to open window
+                        break;
+                }
+            }
+            
+            public String findAbsolutePath(TreeItem tree, String path)
+            {
+                String str = ROOT + path;
+                
+                if(null == tree.getParentItem())
+                {
+                    return str;
+                }
+                String parent = tree.getParentItem().getText();
+                return findAbsolutePath(tree.getParentItem(), parent + "/"+ path);
+            }
+            
+            public void mouseDoubleClick(MouseEvent event)
+            {
+                //System.out.println("double clicked");
+                TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
+                if (dest !=null)
+                {
+                    Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
+                    System.out.println("open file "+ path.toString());
+                    open(path, text_1);
+                }
+            }
+        });
+        tree_2.setTouchEnabled(true);
+        tree_2.setBounds(10, 10, 145, 260);
+        
+        Text text_1 = new Text( composite_3, SWT.WRAP | SWT.MULTI | SWT.BORDER | 
+                                             SWT.H_SCROLL | SWT.V_SCROLL);
+        text_1.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
+                {
+                    System.out.println("Save File"); 
+                }
+            }
+        });
+        text_1.setBounds(161, 10, 321, 260);
+        GridData gridData = new GridData( GridData.HORIZONTAL_ALIGN_FILL | 
+                                          GridData.VERTICAL_ALIGN_FILL);
+        gridData.grabExcessVerticalSpace = true;
+        
+                text_1.setLayoutData(gridData);
+                _tree.setOutput(text_1);
+        
+        
         
         TabItem tbtmMachines = new TabItem(tabFolder, SWT.NONE);
         tbtmMachines.setText("Machines");

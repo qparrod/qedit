@@ -1,3 +1,4 @@
+package Core;
 import org.eclipse.swt.widgets.Composite;
 
 
@@ -11,8 +12,8 @@ public class AddSsh extends Composite
      */
     public AddSsh(Composite parent, int style)
     {
-        //test
         super(parent, style);
+        
     }
     
     @Override
