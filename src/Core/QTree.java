@@ -43,7 +43,7 @@ public class QTree
     
     private void createNode(File root, TreeItem treeItem)
     {
-        System.out.println("createNode");
+        System.out.println("createNode : " + root.getPath());
         treeItem.setExpanded(true);
         File[] subs = root.listFiles();
         if (subs != null)
@@ -63,15 +63,10 @@ public class QTree
 
     public void open(Tree tree)
     {
-        Debug.verbose("open tree");
-        String ROOT = "C:/users/qparrod/workspace/qedit2/store";
+        Debug.verbose("open tree test");
+        String ROOT = "G:/repo_qedit/store";
         File root = new File(ROOT);
         createNode(root, tree);
-    }
-    
-    public void setComposite(Composite composite)
-    {
-        //this.composite = composite;
     }
     
     public void setOutput(Text text)
