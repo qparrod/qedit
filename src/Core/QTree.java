@@ -14,6 +14,8 @@ import java.io.File;
 
 import Logging.Debug;
 
+import java.lang.System;
+
 public class QTree
 {
     private Text text;
@@ -43,7 +45,7 @@ public class QTree
     
     private void createNode(File root, TreeItem treeItem)
     {
-        System.out.println("createNode");
+        System.out.println("createNode : " + root.getPath());
         treeItem.setExpanded(true);
         File[] subs = root.listFiles();
         if (subs != null)
@@ -64,14 +66,17 @@ public class QTree
     public void open(Tree tree)
     {
         Debug.verbose("open tree");
-        String ROOT = "C:/users/qparrod/workspace/qedit2/store";
+        String ROOT = "";
+        if ( System.getProperty("os.name").startsWith("Linux") )
+        {
+            ROOT = "/home/qparrod/workspace/qedit/store";
+        }
+        else if ( System.getProperty("os.name").startsWith("Windows") )
+        {
+            ROOT = "G:/repo_qedit/store";
+        }
         File root = new File(ROOT);
         createNode(root, tree);
-    }
-    
-    public void setComposite(Composite composite)
-    {
-        //this.composite = composite;
     }
     
     public void setOutput(Text text)
@@ -79,7 +84,12 @@ public class QTree
         this.text = text;
         if (this.text == null)
         {
-                System.out.println("test");
+            System.out.println("test");
         }
+    }
+    
+    public void setComposite(Composite comp)
+    {
+        
     }
 };
