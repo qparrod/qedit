@@ -12,21 +12,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import Logging.QPrint;
+
 public class QSsh
 {
+    private QPrint qprint = new QPrint("QSsh");
     //private List list = new LinkedList();
     
     public QSsh()
     {
-        System.out.println("QSsh created");
+        qprint.verbose("QSsh created");
     }
     
     public void add()
     {
-        System.out.println("Add machine");
+        qprint.verbose("Add machine");
         Display display = Display.getDefault();
         QSshShell shell = new QSshShell();
-        QSshConf conf;
         shell.open();
         shell.layout();
         
@@ -37,12 +39,14 @@ public class QSsh
                 display.sleep();
             }
         }
+        
         if (shell.isConfForSsh())
         {
-            conf = shell.getSshConf();
-            System.out.println("configuration utilisée:\nHost   ="+conf.getIp()+
-                               "\nLogin  ="+conf.getLogin()+
-                               "\nPasswd ="+conf.getPasswd());
+            QSshConf conf = shell.getSshConf();
+            qprint.verbose("configuration utilisée:" +
+                           "\n\tHost   = " + conf.getIp()+
+                           "\n\tLogin  = " + conf.getLogin()+
+                           "\n\tPasswd = " + conf.getPasswd());
             //list.add(shell.getSshConf());
         }
     }
@@ -55,21 +59,22 @@ class QSshConf
     private String ip;
     private String login;
     private String passwd;
-    
-    public QSshConf()
-    {
-        this.ip     = "0.0.0.0";
-        this.login  = "default";
-        this.passwd = "default";
-        System.out.println("new SSH configuration");
-    }
+    private QPrint qprint = new QPrint("QSshConf");
     
     public QSshConf(String ip)
     {
         this.ip     = ip;
         this.login  = "default";
         this.passwd = "default";
-        System.out.println("new SSH configuration");
+        qprint.verbose("new SSH configuration");
+    }
+    
+    public QSshConf()
+    {
+        this.ip     = "0.0.0.0";
+        this.login  = "default";
+        this.passwd = "default";
+        qprint.verbose("new SSH configuration");
     }
     
     public void setIp(String ip)      { this.ip     = ip;   }
@@ -84,13 +89,13 @@ class QSshShell extends Shell
 {
     private QSshShell shell;
     private QSshConf  conf;
+    private QPrint    qprint = new QPrint("QSshShell");
     
     public QSshShell()
     {
         shell = this;
         shell.setText("Connection setting");
         shell.setLayout(new GridLayout(2, false));
-        
         
         Composite composite = new Composite(this.shell, SWT.NONE);
         composite.setLayout(new GridLayout(2, true));
@@ -105,7 +110,7 @@ class QSshShell extends Shell
         btnSsh.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
-                System.out.println("ssh chosen");
+                qprint.verbose("ssh chosen");
                 conf = new QSshConf();
             }
         });
@@ -117,7 +122,7 @@ class QSshShell extends Shell
         
         final Text textName = new Text(composite, SWT.BORDER);
         gridData= new GridData();
-        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.horizontalAlignment = GridData.FILL;
         textName.setLayoutData(gridData);
         
         Label lblLogin = new Label(composite, SWT.NONE);
@@ -127,7 +132,7 @@ class QSshShell extends Shell
         
         final Text textLogin = new Text(composite, SWT.BORDER);
         gridData= new GridData();
-        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.horizontalAlignment = GridData.FILL;
         textLogin.setLayoutData(gridData);
         
         Label lblPswd = new Label(composite, SWT.NONE);
@@ -137,7 +142,7 @@ class QSshShell extends Shell
         
         final Text textPasswd = new Text(composite, SWT.BORDER);
         gridData= new GridData();
-        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.horizontalAlignment = GridData.FILL;
         textPasswd.setLayoutData(gridData);
 
         Button btnOk = new Button(composite, SWT.NONE);
@@ -145,7 +150,7 @@ class QSshShell extends Shell
         btnOk.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                System.out.println("OK ");
+                qprint.verbose("OK ");
                 if (null != conf)
                 {
                     conf.setIp(textName.getText());
@@ -161,7 +166,7 @@ class QSshShell extends Shell
         btnCancel.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                System.out.println("Cancel");
+                qprint.verbose("Cancel");
                 shell.dispose();
             }
         });

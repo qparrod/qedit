@@ -6,17 +6,18 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import java.io.File;
 
-import Logging.Debug;
+import Logging.QPrint;
 
 import java.lang.System;
 
 public class QTree
 {
     private Text text;
+    private QPrint qprint = new QPrint("QTree");
     
     public QTree(Tree tree)
     {
-        Debug.verbose("build QTree");
+        qprint.verbose("build QTree");
         this.open(tree);
     }
     
@@ -40,7 +41,7 @@ public class QTree
     
     private void createNode(File root, TreeItem treeItem)
     {
-        System.out.println("createNode : " + root.getPath());
+        qprint.verbose("createNode : " + root.getPath());
         treeItem.setExpanded(true);
         File[] subs = root.listFiles();
         if (subs != null)
@@ -60,7 +61,7 @@ public class QTree
 
     public void open(Tree tree)
     {
-        Debug.verbose("open tree");
+        qprint.verbose("open tree");
         String ROOT = "";
         if ( System.getProperty("os.name").startsWith("Linux") )
         {
@@ -79,7 +80,7 @@ public class QTree
         this.text = text;
         if (this.text == null)
         {
-            System.out.println("test");
+            qprint.verbose("test");
         }
     }
 };

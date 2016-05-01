@@ -1,4 +1,5 @@
 package Core;
+
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
@@ -12,7 +13,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.FormLayout;
@@ -31,6 +31,9 @@ import java.nio.file.Paths;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
+import Logging.QPrint;
+
+
 public class Playground
 {
     private static Text txtTest;
@@ -43,27 +46,30 @@ public class Playground
     
     private static void open (Path file, Text text)
     {
+        QPrint qprint = new QPrint("Main::open");
         Charset charset = Charset.forName("US-ASCII");
         try (BufferedReader reader = Files.newBufferedReader(file, charset))
         {
             byte[] encoded = Files.readAllBytes(file);
             String toPrint = new String(encoded, charset);
-            System.out.println("toPrint="+toPrint);
+            qprint.verbose("toPrint="+toPrint);
             if ( null == text )
             {
+                
                 return;
             }
             text.setText(toPrint);
         }
         catch (IOException x)
         {
-            System.err.format("IOException: %s%n.", x);
+            qprint.error("Exception: " + x.getMessage());
         }
     }
 
     public static void main(String[] args)
     {
-        System.out.println("qedit debug mode");
+        final QPrint qprint = new QPrint("Main");
+        qprint.verbose("qedit debug mode");
         display = Display.getDefault();
         shlQeditef = new Shell();
         shlQeditef.setLayout(new GridLayout(1, false));
@@ -72,12 +78,12 @@ public class Playground
         Composite composite = new Composite(shlQeditef, SWT.NONE);
         composite.setLayout(new GridLayout(1, true));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        System.out.println("created composite (general)");
+        qprint.verbose("created composite (general)");
         
         TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
         tabFolder.setLayout(new GridLayout(1, true));
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        System.out.println("created tabFolder");
+        qprint.verbose("created tabFolder");
         
         Composite composite_3 = new Composite(tabFolder, SWT.NONE);
         int numColums = 4;
@@ -85,7 +91,7 @@ public class Playground
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
         composite_3.setLayoutData(gridData);
-        System.out.println("created composite_3");
+        qprint.verbose("created composite_3");
         
         if ( System.getProperty("os.name").startsWith("Linux") )
         {
@@ -109,42 +115,30 @@ public class Playground
         Button buttonOpen = new Button(composite_3, SWT.NONE);
         final QFileManager fileManager = new QFileManager(ROOT);
         buttonOpen.setText("Open");
-        buttonOpen.addSelectionListener(new SelectionListener(){
+        buttonOpen.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
                 fileManager.open();
-            }
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                System.out.println("open widgetDefaultSelected()");
             }
         });
         gridData = new GridData();
         buttonOpen.setLayoutData(gridData);
         Button buttonAdd = new Button(composite_3, SWT.NONE);
         buttonAdd.setText("Add");
-        buttonAdd.addSelectionListener(new SelectionListener(){
+        buttonAdd.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
                 fileManager.add();
-            }
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                System.out.println("add widgetDefaultSelected()");
             }
         });
         gridData = new GridData();
         buttonAdd.setLayoutData(gridData);
         Button buttonDelete = new Button(composite_3, SWT.NONE);
         buttonDelete.setText("Delete");
-        buttonDelete.addSelectionListener(new SelectionListener(){
+        buttonDelete.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
                 fileManager.del();
-            }
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                System.out.println("del widgetDefaultSelected()");
             }
         });
         gridData = new GridData();
@@ -155,7 +149,8 @@ public class Playground
         //////////////
         text_1 = new Text(composite_3, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         text_1.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e)
+            {
                 if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
                 {
                     fileManager.save();
@@ -206,7 +201,7 @@ public class Playground
                 TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
                 if ( dest == null ) { return; }
                 Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
-                System.out.println("open file "+ path.toString());
+                qprint.verbose("open file "+ path.toString());
                 open(path, text_1);
             }
         });
