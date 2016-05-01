@@ -133,7 +133,7 @@ public class Playground
                 }
                 else if ( System.getProperty("os.name").startsWith("Windows") )
                 {
-                    ROOT = "C:/users/qparrod/workspace/qedit2/store/";
+                    ROOT = "G:/repo_qedit/store/";
                 }
                 
                 String str = ROOT + path;
@@ -148,13 +148,11 @@ public class Playground
             
             public void mouseDoubleClick(MouseEvent event)
             {
-                System.out.println("double clicked");
                 if ( tree_2 == null )
                 {
                     System.out.println("tree_2 is null");
                     return;
                 }
-                System.out.println("tree_2 is " + tree_2);
                 TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
                 if (dest != null)
                 {
