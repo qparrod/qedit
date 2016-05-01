@@ -1,14 +1,8 @@
 package Core;
 
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import java.nio.charset.Charset;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import java.io.File;
 
@@ -22,7 +16,7 @@ public class QTree
     
     public QTree(Tree tree)
     {
-        Debug.verbose("build tree");
+        Debug.verbose("build QTree");
         this.open(tree);
     }
     

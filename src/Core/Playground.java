@@ -18,8 +18,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
-
-// manuel
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.graphics.Point;
@@ -28,10 +26,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.nio.file.FileSystem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
@@ -243,15 +239,11 @@ public class Playground
         /////////////
         Button btnNewButton = new Button(composite_1, SWT.NONE);
         btnNewButton.setText("Add Machine");
-        btnNewButton.addSelectionListener(new SelectionListener(){
+        btnNewButton.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
-                // add a new SSH configuration ba adding a new machine in list
+                // add a new SSH configuration by adding a new machine in list
                 qssh.add();
-            }
-            public void widgetDefaultSelected(SelectionEvent event)
-            {
-                System.out.println("btnNewButton widgetDefaultSelected()");
             }
         });
         gridData = new GridData();
@@ -334,6 +326,7 @@ public class Playground
         btnNewButton_2.setLayoutData(fd_btnNewButton_2);
         btnNewButton_2.setText("Copy");
         shlQeditef.open();
+        
         while (!shlQeditef.isDisposed())
         {
             if (!display.readAndDispatch())
