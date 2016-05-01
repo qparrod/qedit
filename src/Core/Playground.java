@@ -10,9 +10,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -20,7 +17,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 
 // manuel
@@ -95,18 +91,27 @@ public class Playground
         composite_3.setLayoutData(gridData);
         System.out.println("created composite_3");
         
+        if ( System.getProperty("os.name").startsWith("Linux") )
+        {
+            ROOT = "/home/qparrod/workspace/qedit/store/";
+        }
+        else if ( System.getProperty("os.name").startsWith("Windows") )
+        {
+            ROOT = "G:/repo_qedit/store/";
+        }
+        
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 1
         //////////////////////////////////////////////////////////////////////////////////
         TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        tabItem.setText("File search");
+        tabItem.setText("Notes");
         tabItem.setControl(composite_3);
         
         //////////////
         // BUTTONS
         //////////////
         Button buttonOpen = new Button(composite_3, SWT.NONE);
-        final QFileManager fileManager = new QFileManager();
+        final QFileManager fileManager = new QFileManager(ROOT);
         buttonOpen.setText("Open");
         buttonOpen.addSelectionListener(new SelectionListener(){
             public void widgetSelected(SelectionEvent event)
@@ -193,25 +198,12 @@ public class Playground
                         break;
                 }
             }
-            
             public String findAbsolutePath(TreeItem tree, String path)
             {
-                if ( System.getProperty("os.name").startsWith("Linux") )
-                {
-                    ROOT = "/home/qparrod/workspace/qedit/store/";
-                }
-                else if ( System.getProperty("os.name").startsWith("Windows") )
-                {
-                    ROOT = "G:/repo_qedit/store/";
-                }
-                
-                String str = ROOT + path;
-                
-                if ( null == tree.getParentItem() ) { return str; }
+                if ( null == tree.getParentItem() ) { return (ROOT + path); }
                 String parent = tree.getParentItem().getText();
                 return findAbsolutePath(tree.getParentItem(), parent + "/"+ path);
             }
-            
             public void mouseDoubleClick(MouseEvent event)
             {
                 if ( tree_2 == null ) { return; }
@@ -232,6 +224,8 @@ public class Playground
         tree_2.setLayoutData(gridData);
         
         
+        
+        
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 2
         //////////////////////////////////////////////////////////////////////////////////
@@ -242,11 +236,24 @@ public class Playground
         tbtmMachines.setControl(composite_1);
         composite_1.setLayout(new GridLayout(2, false));
         
+        final QSsh qssh = new QSsh();
+        
         /////////////
         // BUTTONS
         /////////////
         Button btnNewButton = new Button(composite_1, SWT.NONE);
         btnNewButton.setText("Add Machine");
+        btnNewButton.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent event)
+            {
+                // add a new SSH configuration ba adding a new machine in list
+                qssh.add();
+            }
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                System.out.println("btnNewButton widgetDefaultSelected()");
+            }
+        });
         gridData = new GridData();
         btnNewButton.setLayoutData(gridData);
         
@@ -269,29 +276,10 @@ public class Playground
         // TREE
         /////////////
         Tree tree = new Tree(composite_1, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION);
-        tree.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                System.out.println("OK1");
-            }
-        });
-        tree.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-        tree.setToolTipText("test");
         
         TreeItem trtmMachine = new TreeItem(tree, SWT.NONE);
-        trtmMachine.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event e) {
-                switch (e.type)
-                {
-                    case SWT.Selection:
-                        System.out.println("OK2");
-                        break;
-                }
-                System.out.println("KO");
-            }
-        });
         trtmMachine.setGrayed(true);
-        trtmMachine.setText("machine2");
+        trtmMachine.setText("machine1");
         
         gridData = new GridData();
         gridData.verticalAlignment         = GridData.FILL;
@@ -331,28 +319,7 @@ public class Playground
         tree_1.setLayoutData(fd_tree_1);
         
         Button btnNewButton_1 = new Button(composite_2, SWT.NONE);
-        btnNewButton_1.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                text.insert("Add key selected\n");
-                // add a new item each time add
-                // launch a new window with settings
 
-                //AddSss addsss = new AddSss(shlQeditef, 0);
-                //addsss.open();
-                
-                AddSshConsole ssh = new AddSshConsole(display);
-                ssh.open();
-                /*
-                while (!ssh.isDisposed())
-                {
-                    if (ssh.exit)
-                    {
-                        ssh.close();
-                    }
-                }*/
-            }
-        });
         fd_tree_1.bottom = new FormAttachment(btnNewButton_1, 217, SWT.BOTTOM);
         fd_tree_1.top = new FormAttachment(btnNewButton_1, 8);
         btnNewButton_1.setLayoutData(new FormData());

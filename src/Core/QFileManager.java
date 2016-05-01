@@ -2,14 +2,18 @@ package Core;
 
 public class QFileManager
 {
-    public QFileManager()
+    private String mainPath;
+    public QFileManager(String root)
     {
-        System.out.println("create QFileManager");
+        System.out.println("create QFileManager in " + root);
+        this.mainPath = root;
     }
     
     public void add()
     {
-        System.out.println("Add pressed");
+        System.out.println("Add pressed. Create File");
+        // step 1: open a new windows to choose the name of file
+        // step 2: save file
     }
     
     public void del()
