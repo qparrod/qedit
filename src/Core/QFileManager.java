@@ -1,33 +1,37 @@
 package Core;
 
+import Logging.QPrint;
+
 public class QFileManager
 {
-    private String mainPath;
+    //private String mainPath;
+    private QPrint qprint = new QPrint("QFileManager");
+    
     public QFileManager(String root)
     {
-        System.out.println("create QFileManager in " + root);
-        this.mainPath = root;
+        qprint.verbose("create QFileManager in " + root);
+        //this.mainPath = root;
     }
     
     public void add()
     {
-        System.out.println("Add pressed. Create File");
+        qprint.verbose("Add pressed. Create File");
         // step 1: open a new windows to choose the name of file
         // step 2: save file
     }
     
     public void del()
     {
-        System.out.println("Delete pressed");
+        qprint.verbose("Delete pressed");
     }
     
     public void open()
     {
-        System.out.println("Open pressed");
+        qprint.verbose("Open pressed");
     }
     
     public void save()
     {
-        System.out.println("Save pressed");
+        qprint.verbose("Save pressed");
     }
 }
