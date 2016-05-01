@@ -87,9 +87,4 @@ public class QTree
             System.out.println("test");
         }
     }
-    
-    public void setComposite(Composite comp)
-    {
-        
-    }
 };

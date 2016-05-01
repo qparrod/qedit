@@ -12,12 +12,14 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 
 // manuel
@@ -79,38 +81,68 @@ public class Playground
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
-        tabFolder.setLayout(new GridLayout(2, true));
+        tabFolder.setLayout(new GridLayout(1, true));
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
-        TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        tabItem.setText("New Item");
-        
         Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-        composite_3.setLayout(new GridLayout(2, true));
-        composite_3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        tabItem.setControl(composite_3);
-        new Label(composite_3, SWT.NONE);
-        new Label(composite_3, SWT.NONE);
+        int numColums = 4;
+        composite_3.setLayout(new GridLayout(numColums, false));
+        GridData gridData = new GridData();
+        gridData.verticalAlignment = GridData.FILL;
+        composite_3.setLayoutData(gridData);
         
-        text_1 = new Text( composite_3, SWT.WRAP | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        //////////////////////////////////////////////////////////////////////////////////
+        // ITEM 1
+        //////////////////////////////////////////////////////////////////////////////////
+        TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem.setText("File search");
+        tabItem.setControl(composite_3);
+        
+        // BUTTONS
+        Button buttonOpen = new Button(composite_3, SWT.NONE);
+        buttonOpen.setText("Open");
+        gridData = new GridData();
+        buttonOpen.setLayoutData(gridData);
+        Button buttonAdd = new Button(composite_3, SWT.NONE);
+        buttonAdd.setText("Add");
+        gridData = new GridData();
+        buttonAdd.setLayoutData(gridData);
+        Button buttonDelete = new Button(composite_3, SWT.NONE);
+        buttonDelete.setText("Delete");
+        gridData = new GridData();
+        buttonDelete.setLayoutData(gridData);
+        
+        //////////////
+        // TEXTE PART
+        //////////////
+        text_1 = new Text(composite_3, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         text_1.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
                 {
-                    System.out.println("Save File"); 
+                    System.out.println("Save File");
+                    // TODO: save file
                 }
             }
         });
-        text_1.setBounds(161, 10, 321, 260);
         
-        tree_2 = new Tree(composite_3, SWT.BORDER);
+        gridData = new GridData();
+        gridData.verticalAlignment         = GridData.FILL;
+        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.verticalSpan              = 2;
+        gridData.grabExcessVerticalSpace   = true;
+        gridData.grabExcessHorizontalSpace = true;
+        text_1.setLayoutData(gridData);
+        
+        //////////////
+        // TREE PART
+        //////////////
+        tree_2 = new Tree(composite_3, SWT.SINGLE | SWT.BORDER);
         // open recursively files already present in software repository
         QTree _tree = new QTree();
-        _tree.setComposite(composite_3);
         _tree.open(tree_2);
         
         tree_2.addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseDown(MouseEvent e) {
                 int buttonType = e.button;
                 switch(buttonType)
@@ -133,7 +165,7 @@ public class Playground
                 }
                 else if ( System.getProperty("os.name").startsWith("Windows") )
                 {
-                    ROOT = "C:/users/qparrod/workspace/qedit2/store/";
+                    ROOT = "G:/repo_qedit/store/";
                 }
                 
                 String str = ROOT + path;
@@ -148,13 +180,11 @@ public class Playground
             
             public void mouseDoubleClick(MouseEvent event)
             {
-                System.out.println("double clicked");
                 if ( tree_2 == null )
                 {
                     System.out.println("tree_2 is null");
                     return;
                 }
-                System.out.println("tree_2 is " + tree_2);
                 TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
                 if (dest != null)
                 {
@@ -165,14 +195,18 @@ public class Playground
             }
         });
         tree_2.setTouchEnabled(true);
-        tree_2.setBounds(10, 10, 145, 260);
+        gridData = new GridData();
+        gridData.horizontalSpan            = 3;
+        gridData.verticalAlignment         = GridData.FILL;
+        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.grabExcessVerticalSpace   = true;
+        gridData.grabExcessHorizontalSpace = false;
+        tree_2.setLayoutData(gridData);
         
-        GridData gridData = new GridData( GridData.HORIZONTAL_ALIGN_FILL | 
-                                          GridData.VERTICAL_ALIGN_FILL);
-        gridData.grabExcessVerticalSpace = true;
         
-        text_1.setLayoutData(gridData);
-        _tree.setOutput(text_1);
+        //////////////////////////////////////////////////////////////////////////////////
+        // ITEM 2
+        //////////////////////////////////////////////////////////////////////////////////
         
         TabItem tbtmMachines = new TabItem(tabFolder, SWT.NONE);
         tbtmMachines.setText("Machines");
