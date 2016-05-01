@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.FormLayout;
@@ -79,10 +80,12 @@ public class Playground
         Composite composite = new Composite(shlQeditef, SWT.NONE);
         composite.setLayout(new GridLayout(1, true));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        System.out.println("created composite (general)");
         
         TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
         tabFolder.setLayout(new GridLayout(1, true));
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        System.out.println("created tabFolder");
         
         Composite composite_3 = new Composite(tabFolder, SWT.NONE);
         int numColums = 4;
@@ -90,6 +93,7 @@ public class Playground
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
         composite_3.setLayoutData(gridData);
+        System.out.println("created composite_3");
         
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 1
@@ -98,30 +102,62 @@ public class Playground
         tabItem.setText("File search");
         tabItem.setControl(composite_3);
         
+        //////////////
         // BUTTONS
+        //////////////
         Button buttonOpen = new Button(composite_3, SWT.NONE);
+        final QFileManager fileManager = new QFileManager();
         buttonOpen.setText("Open");
+        buttonOpen.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent event)
+            {
+                fileManager.open();
+            }
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                System.out.println("open widgetDefaultSelected()");
+            }
+        });
         gridData = new GridData();
         buttonOpen.setLayoutData(gridData);
         Button buttonAdd = new Button(composite_3, SWT.NONE);
         buttonAdd.setText("Add");
+        buttonAdd.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent event)
+            {
+                fileManager.add();
+            }
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                System.out.println("add widgetDefaultSelected()");
+            }
+        });
         gridData = new GridData();
         buttonAdd.setLayoutData(gridData);
         Button buttonDelete = new Button(composite_3, SWT.NONE);
         buttonDelete.setText("Delete");
+        buttonDelete.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent event)
+            {
+                fileManager.del();
+            }
+            public void widgetDefaultSelected(SelectionEvent event)
+            {
+                System.out.println("del widgetDefaultSelected()");
+            }
+        });
         gridData = new GridData();
         buttonDelete.setLayoutData(gridData);
         
         //////////////
-        // TEXTE PART
+        // TEXT PART
         //////////////
         text_1 = new Text(composite_3, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         text_1.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
                 {
-                    System.out.println("Save File");
-                    // TODO: save file
+                    fileManager.save();
                 }
             }
         });
@@ -138,12 +174,13 @@ public class Playground
         // TREE PART
         //////////////
         tree_2 = new Tree(composite_3, SWT.SINGLE | SWT.BORDER);
+        
         // open recursively files already present in software repository
-        QTree _tree = new QTree();
-        _tree.open(tree_2);
+        new QTree(tree_2);
         
         tree_2.addMouseListener(new MouseAdapter() {
-            public void mouseDown(MouseEvent e) {
+            public void mouseDown(MouseEvent e)
+            {
                 int buttonType = e.button;
                 switch(buttonType)
                 {
@@ -170,28 +207,19 @@ public class Playground
                 
                 String str = ROOT + path;
                 
-                if(null == tree.getParentItem())
-                {
-                    return str;
-                }
+                if ( null == tree.getParentItem() ) { return str; }
                 String parent = tree.getParentItem().getText();
                 return findAbsolutePath(tree.getParentItem(), parent + "/"+ path);
             }
             
             public void mouseDoubleClick(MouseEvent event)
             {
-                if ( tree_2 == null )
-                {
-                    System.out.println("tree_2 is null");
-                    return;
-                }
+                if ( tree_2 == null ) { return; }
                 TreeItem dest = tree_2.getItem(new Point(event.x, event.y));
-                if (dest != null)
-                {
-                    Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
-                    System.out.println("open file "+ path.toString());
-                    open(path, text_1);
-                }
+                if ( dest == null ) { return; }
+                Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
+                System.out.println("open file "+ path.toString());
+                open(path, text_1);
             }
         });
         tree_2.setTouchEnabled(true);
@@ -207,7 +235,6 @@ public class Playground
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 2
         //////////////////////////////////////////////////////////////////////////////////
-        
         TabItem tbtmMachines = new TabItem(tabFolder, SWT.NONE);
         tbtmMachines.setText("Machines");
         
@@ -215,14 +242,36 @@ public class Playground
         tbtmMachines.setControl(composite_1);
         composite_1.setLayout(new GridLayout(2, false));
         
+        /////////////
+        // BUTTONS
+        /////////////
         Button btnNewButton = new Button(composite_1, SWT.NONE);
         btnNewButton.setText("Add Machine");
-        new Label(composite_1, SWT.NONE);
+        gridData = new GridData();
+        btnNewButton.setLayoutData(gridData);
         
+        /////////////
+        // TEXT
+        /////////////
+        txtTest = new Text(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+        txtTest.setText("window to display debug text");
+        gridData = new GridData();
+        gridData.horizontalSpan            = 1;
+        gridData.verticalSpan              = 2;
+        gridData.verticalAlignment         = GridData.FILL;
+        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.grabExcessVerticalSpace   = true;
+        gridData.grabExcessHorizontalSpace = true;
+        txtTest.setLayoutData(gridData);
+        
+        
+        /////////////
+        // TREE
+        /////////////
         Tree tree = new Tree(composite_1, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION);
         tree.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
+            public void widgetSelected(SelectionEvent e)
+            {
                 System.out.println("OK1");
             }
         });
@@ -244,13 +293,16 @@ public class Playground
         trtmMachine.setGrayed(true);
         trtmMachine.setText("machine2");
         
-        txtTest = new Text(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-        GridData gd_txtTest = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_txtTest.heightHint = 138;
-        txtTest.setLayoutData(gd_txtTest);
-        txtTest.setText("test cette fenetre doit servir de console pour le debug\nmais je ne sais pas si ca va marcher");
+        gridData = new GridData();
+        gridData.verticalAlignment         = GridData.FILL;
+        gridData.horizontalAlignment       = GridData.FILL;
+        gridData.grabExcessVerticalSpace   = true;
+        gridData.grabExcessHorizontalSpace = false;
+        tree.setLayoutData(gridData);
         
-        
+        //////////////////////////////////////////////////////////////////////////////////
+        // ITEM 3
+        //////////////////////////////////////////////////////////////////////////////////
         
         TabItem tbtmNotes = new TabItem(tabFolder, SWT.NONE);
         tbtmNotes.setText("Notes");
@@ -280,8 +332,8 @@ public class Playground
         
         Button btnNewButton_1 = new Button(composite_2, SWT.NONE);
         btnNewButton_1.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
+            public void widgetSelected(SelectionEvent e)
+            {
                 text.insert("Add key selected\n");
                 // add a new item each time add
                 // launch a new window with settings

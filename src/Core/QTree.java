@@ -20,9 +20,10 @@ public class QTree
 {
     private Text text;
     
-    public QTree()
+    public QTree(Tree tree)
     {
         Debug.verbose("build tree");
+        this.open(tree);
     }
     
     private void createNode(File root, Tree tree)
