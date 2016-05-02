@@ -181,10 +181,10 @@ public class Playground
                 switch(buttonType)
                 {
                     case 1:
-                        //System.out.println("left button clicked");
+                        //qprint.verbose("left button clicked");
                         break;
                     case 3:
-                        //System.out.println("right button clicked");
+                        //qprint.verbose("right button clicked");
                         // swing lib to open window
                         break;
                 }
