@@ -199,9 +199,11 @@ public class Playground
                         break;
                     }
                     case 3: // right click
+                    {
                         qprint.verbose("right button clicked");
                         // swing lib to open window
                         break;
+                    }
                 }
             }
             public String findAbsolutePath(TreeItem tree, String path)
