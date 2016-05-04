@@ -33,7 +33,6 @@ import org.eclipse.swt.events.KeyEvent;
 
 import Logging.QPrint;
 
-
 public class Playground
 {
     private static Text txtTest;
