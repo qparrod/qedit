@@ -183,6 +183,7 @@ public class Playground
         new QTree(tree_2);
         
         tree_2.addMouseListener(new MouseAdapter() {
+            // TODO: create a handler here
             public void mouseDown(MouseEvent e)
             {
                 int buttonType = e.button;

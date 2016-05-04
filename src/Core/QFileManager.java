@@ -95,24 +95,17 @@ public class QFileManager
         String s = text.getText();
         byte data[] = s.getBytes();
 
-        try
-        {
-            Files.deleteIfExists(file);
-        } catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         OutputStream out;
         try
         {
             out = new BufferedOutputStream(
                     Files.newOutputStream(file, CREATE, WRITE));
-            qprint.verbose("data: "+data.toString());
+            qprint.verbose("message to write: "+s);
             out.write(data, 0, data.length);
-        } catch (IOException e)
+            out.close();
+        } 
+        catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
