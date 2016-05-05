@@ -22,49 +22,23 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.graphics.Point;
 
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Paths;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
 import Logging.QPrint;
 
-
 public class Playground
 {
-    private static Text txtTest;
-    private static Text text;
-    private static Shell shlQeditef;
+    private static Text    txtTest;
+    private static Text    text;
+    private static Shell   shlQeditef;
     private static Display display;
-    private static Text text_1;
-    public static String ROOT;
-    private static Tree tree_2;
-    
-    private static void open (Path file, Text text)
-    {
-        QPrint qprint = new QPrint("Main::open");
-        Charset charset = Charset.forName("US-ASCII");
-        try (BufferedReader reader = Files.newBufferedReader(file, charset))
-        {
-            byte[] encoded = Files.readAllBytes(file);
-            String toPrint = new String(encoded, charset);
-            qprint.verbose("toPrint="+toPrint);
-            if ( null == text )
-            {
-                
-                return;
-            }
-            text.setText(toPrint);
-        }
-        catch (IOException x)
-        {
-            qprint.error("Exception: " + x.getMessage());
-        }
-    }
+    private static Text    text_1;
+    public  static String  ROOT;
+    private static Tree    tree_2;
+    private static Path    fileSelected;
 
     public static void main(String[] args)
     {
@@ -112,35 +86,43 @@ public class Playground
         //////////////
         // BUTTONS
         //////////////
-        Button buttonOpen = new Button(composite_3, SWT.NONE);
         final QFileManager fileManager = new QFileManager(ROOT);
-        buttonOpen.setText("Open");
-        buttonOpen.addSelectionListener(new SelectionAdapter(){
+        SelectionAdapter buttonSelectionAdapter = new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
-                fileManager.open();
+                // save file selected in item list
+                qprint.verbose(event.widget.getClass().getSimpleName());
+                if (event.widget.toString().contains("Open"))
+                {
+                    fileManager.open();
+                }
+                else if (event.widget.toString().contains("Add"))
+                {
+                    fileManager.add();
+                }
+                else if (event.widget.toString().contains("Del"))
+                {
+                    fileManager.del();
+                }
+                else
+                {
+                    qprint.error("button not exists!");
+                }
             }
-        });
+        };
+        Button buttonOpen = new Button(composite_3, SWT.NONE);
+        buttonOpen.setText("Open");
+        buttonOpen.addSelectionListener(buttonSelectionAdapter);
         gridData = new GridData();
         buttonOpen.setLayoutData(gridData);
         Button buttonAdd = new Button(composite_3, SWT.NONE);
         buttonAdd.setText("Add");
-        buttonAdd.addSelectionListener(new SelectionAdapter(){
-            public void widgetSelected(SelectionEvent event)
-            {
-                fileManager.add();
-            }
-        });
+        buttonAdd.addSelectionListener(buttonSelectionAdapter);
         gridData = new GridData();
         buttonAdd.setLayoutData(gridData);
         Button buttonDelete = new Button(composite_3, SWT.NONE);
         buttonDelete.setText("Delete");
-        buttonDelete.addSelectionListener(new SelectionAdapter(){
-            public void widgetSelected(SelectionEvent event)
-            {
-                fileManager.del();
-            }
-        });
+        buttonDelete.addSelectionListener(buttonSelectionAdapter);
         gridData = new GridData();
         buttonDelete.setLayoutData(gridData);
         
@@ -153,7 +135,10 @@ public class Playground
             {
                 if ( (e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 115)) 
                 {
-                    fileManager.save();
+                    if ( null != fileSelected)
+                    {
+                        fileManager.save(fileSelected, text_1);
+                    }
                 }
             }
         });
@@ -175,18 +160,28 @@ public class Playground
         new QTree(tree_2);
         
         tree_2.addMouseListener(new MouseAdapter() {
+            // TODO: create a handler here
             public void mouseDown(MouseEvent e)
             {
                 int buttonType = e.button;
                 switch(buttonType)
                 {
-                    case 1:
-                        //System.out.println("left button clicked");
+                    case 1: // left click
+                    {
+                        //TODO : put it in a function handler
+                        TreeItem dest = tree_2.getItem(new Point(e.x, e.y));
+                        if (null == dest) { return; }
+                        Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
+                        qprint.verbose("left button clicked, selected path="+ path.toString());
+                        fileSelected = path;
                         break;
-                    case 3:
-                        //System.out.println("right button clicked");
+                    }
+                    case 3: // right click
+                    {
+                        qprint.verbose("right button clicked");
                         // swing lib to open window
                         break;
+                    }
                 }
             }
             public String findAbsolutePath(TreeItem tree, String path)
@@ -202,7 +197,7 @@ public class Playground
                 if ( dest == null ) { return; }
                 Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
                 qprint.verbose("open file "+ path.toString());
-                open(path, text_1);
+                fileManager.open(path, text_1);
             }
         });
         tree_2.setTouchEnabled(true);
