@@ -22,11 +22,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.graphics.Point;
 
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Paths;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -35,33 +31,14 @@ import Logging.QPrint;
 
 public class Playground
 {
-    private static Text txtTest;
-    private static Text text;
-    private static Shell shlQeditef;
+    private static Text    txtTest;
+    private static Text    text;
+    private static Shell   shlQeditef;
     private static Display display;
-    private static Text text_1;
-    public static String ROOT;
-    private static Tree tree_2;
-    private static Path fileSelected;
-    
-    // TODO: put in QFileManager
-    private static void open (Path file, Text text)
-    {
-        QPrint qprint = new QPrint("Main::open");
-        Charset charset = Charset.forName("US-ASCII");
-        try (BufferedReader reader = Files.newBufferedReader(file, charset))
-        {
-            byte[] encoded = Files.readAllBytes(file);
-            String toPrint = new String(encoded, charset);
-            qprint.verbose("toPrint="+toPrint);
-            if ( null == text ) { return; }
-            text.setText(toPrint);
-        }
-        catch (IOException x)
-        {
-            qprint.error("Exception: " + x.getMessage());
-        }
-    }
+    private static Text    text_1;
+    public  static String  ROOT;
+    private static Tree    tree_2;
+    private static Path    fileSelected;
 
     public static void main(String[] args)
     {
@@ -220,7 +197,7 @@ public class Playground
                 if ( dest == null ) { return; }
                 Path path = Paths.get(findAbsolutePath(dest, dest.getText()));
                 qprint.verbose("open file "+ path.toString());
-                open(path, text_1);
+                fileManager.open(path, text_1);
             }
         });
         tree_2.setTouchEnabled(true);

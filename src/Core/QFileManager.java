@@ -9,6 +9,11 @@ import java.nio.file.Path;
 import static java.nio.file.StandardOpenOption.*;
 import java.io.*;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import Logging.QPrint;
@@ -44,7 +49,7 @@ class QFileType
 
 public class QFileManager
 {
-    // TODO : add a list to save all files open 
+    // TODO : add a list to save all files open?
     
     private QPrint qprint = new QPrint("QFileManager");
     
@@ -61,6 +66,7 @@ public class QFileManager
         
         QFileType newFile = new QFileType();
         newFile.setFileName("toto");
+        new QFileManagerShell();
         // list.add(newFile);
     }
     
@@ -69,11 +75,9 @@ public class QFileManager
         qprint.verbose("Delete pressed");
     }
     
-    public void open()
+    public void open(Path file, Text text)
     {
-        qprint.verbose("Open pressed");
-        /*
-        QPrint qprint = new QPrint("Main::open");
+        qprint.verbose("open file "+file.toString());
         Charset charset = Charset.forName("US-ASCII");
         try (BufferedReader reader = Files.newBufferedReader(file, charset))
         {
@@ -86,7 +90,12 @@ public class QFileManager
         catch (IOException x)
         {
             qprint.error("Exception: " + x.getMessage());
-        }*/
+        }
+    }
+    
+    public void open()
+    {
+        qprint.verbose("Open pressed");
     }
     
     public void save(Path file, Text text)
@@ -108,5 +117,34 @@ public class QFileManager
         {
             e.printStackTrace();
         }
+    }
+}
+
+class QFileManagerShell extends Shell
+{
+    private QFileManagerShell shell;
+    private QPrint qprint = new QPrint("QFileManagerShell");
+    
+    public QFileManagerShell()
+    {
+        shell = this;
+        shell.setText("test");
+        shell.setLayout(new GridLayout(2, false));
+        
+        Composite composite = new Composite(this.shell, SWT.NONE);
+        composite.setLayout(new GridLayout(2, true));
+        GridData gridData= new GridData();
+        composite.setLayoutData(gridData);
+        
+        qprint.verbose("begin");
+        shell.open();
+        
+        // TODO: fill window with parameters
+        
+    }
+    
+    protected void checkSubclass()
+    {
+        // Disable the check that prevents subclassing of SWT components
     }
 }
