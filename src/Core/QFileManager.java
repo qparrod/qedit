@@ -5,14 +5,19 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.nio.file.StandardOpenOption.*;
 import java.io.*;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -128,18 +133,68 @@ class QFileManagerShell extends Shell
     public QFileManagerShell()
     {
         shell = this;
-        shell.setText("test");
-        shell.setLayout(new GridLayout(2, false));
+        shell.setText("Add");
+        shell.setLayout(new GridLayout(3, false));
         
         Composite composite = new Composite(this.shell, SWT.NONE);
-        composite.setLayout(new GridLayout(2, true));
+        composite.setLayout(new GridLayout(3, true));
         GridData gridData= new GridData();
         composite.setLayoutData(gridData);
         
+        //label + text + bouton browse
+        Label lblName = new Label(composite, SWT.NONE);
+        lblName.setText("File name");
+        gridData= new GridData();
+        gridData.horizontalAlignment = GridData.FILL;
+        gridData.grabExcessHorizontalSpace = false;
+        lblName.setLayoutData(gridData);
+        
+        final Text textName = new Text(composite, SWT.BORDER);
+        gridData= new GridData();
+        if ( System.getProperty("os.name").startsWith("Linux") )
+        {
+            textName.setText("/home/qparrod/workspace/qedit/store/");
+        }
+        else if ( System.getProperty("os.name").startsWith("Windows") )
+        {
+            textName.setText("G:/repo_qedit/store/");
+        }
+        
+        gridData.horizontalAlignment = GridData.FILL;
+        textName.setLayoutData(gridData);
+        
+        Button btnBrowse = new Button(composite, SWT.NONE);
+        btnBrowse.setText("Browse");
+        btnBrowse.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                qprint.verbose("Browse");
+            }
+        });
+        
+        Button btnOk = new Button(composite, SWT.NONE);
+        btnOk.setText("OK");
+        btnOk.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                qprint.verbose("OK. file=" + textName.getText());
+                Path path = Paths.get(textName.getText());
+                qprint.verbose(path.toString());
+                if (path.isAbsolute())
+                {
+                    qprint.verbose("path is absolute");
+                }
+                qprint.verbose(path.getFileName().toString());
+                qprint.verbose("" + path.getNameCount());
+                for (int fileIdx=0;fileIdx<path.getNameCount();fileIdx++)
+                {
+                    //if ()
+                }
+            }
+        });
+        
         qprint.verbose("begin");
         shell.open();
-        
-        // TODO: fill window with parameters
         
     }
     
