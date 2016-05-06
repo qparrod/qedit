@@ -17,6 +17,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -101,6 +103,26 @@ public class QFileManager
     public void open()
     {
         qprint.verbose("Open pressed");
+        Shell shell = new Shell();
+        FileDialog fd = new FileDialog(shell, SWT.OPEN);
+        fd.setText("Open");
+        String s = "";
+        if ( System.getProperty("os.name").startsWith("Linux") )
+        {
+            s = "/home/qparrod/workspace/qedit/store/";
+        }
+        else if ( System.getProperty("os.name").startsWith("Windows") )
+        {
+            s = "G:/repo_qedit/store/";
+        }
+        fd.setFilterPath(s);
+        String[] filterExt = {"*.txt","*.log", "*"};
+        fd.setFilterExtensions(filterExt);
+        String selected = fd.open();
+        qprint.verbose(selected);
+        
+        // add file to editor
+        
     }
     
     public void save(Path file, Text text)
@@ -164,11 +186,20 @@ class QFileManagerShell extends Shell
         textName.setLayoutData(gridData);
         
         Button btnBrowse = new Button(composite, SWT.NONE);
-        btnBrowse.setText("Browse");
+        btnBrowse.setText("Browse...");
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
                 qprint.verbose("Browse");
+                DirectoryDialog dlg = new DirectoryDialog(shell);
+                dlg.setFilterPath(textName.getText());
+                dlg.setText("Directory Dialog");
+                dlg.setMessage("Select a directory");
+                String dir = dlg.open();
+                if (dir != null)
+                {
+                    textName.setText(dir);
+                }
             }
         });
         
