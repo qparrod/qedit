@@ -286,6 +286,8 @@ public class Playground
         fd_text.right = new FormAttachment(100, -52);
         fd_text.top = new FormAttachment(0, 35);
         fd_text.left = new FormAttachment(100, -269);
+        text.setText("DEBUG window");
+        qprint.configureText(text);
         text.setLayoutData(fd_text);
         
         Label lblNewLabel = new Label(composite_2, SWT.NONE);

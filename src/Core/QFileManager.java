@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -34,13 +35,19 @@ class QFileType
     
     private QPrint qprint = new QPrint("QFileType");
     
+    public QFileType(String filePath, String fileName)
+    {
+        this.filePath = filePath;
+        this.fileName = fileName;
+    }
+    
     public QFileType()
     {
         qprint.verbose("created");
-        filePath="";
-        fileName="";
-        timeLastOpened="";
-        timeCreated="";
+        this.filePath       = "";
+        this.fileName       = "";
+        this.timeLastOpened = "";
+        this.timeCreated    = "";
     }
     
     public String getFilePath()       { return filePath; }
@@ -68,13 +75,27 @@ public class QFileManager
     public void add()
     {
         qprint.verbose("Add pressed. Create File");
-        // step 1: open a new windows to choose the name of file
-        // step 2: save file
         
-        QFileType newFile = new QFileType();
-        newFile.setFileName("toto");
-        new QFileManagerShell();
-        // list.add(newFile);
+        Display display = Display.getDefault();
+        
+        QFileManagerShell fm = new QFileManagerShell();
+        while (!fm.isDisposed())
+        {
+            if (!display.readAndDispatch())
+            {
+                display.sleep();
+            }
+        }
+        QFileType file = fm.getFile();
+        if ( null == file )
+        {
+            qprint.error("file is null");
+            return;
+        }
+        qprint.verbose("add into tree: file="+file.getFileName());
+        
+        // TODO : create File and update tree
+        
     }
     
     public void del()
@@ -150,6 +171,7 @@ public class QFileManager
 class QFileManagerShell extends Shell
 {
     private QFileManagerShell shell;
+    private QFileType file;
     private QPrint qprint = new QPrint("QFileManagerShell");
     
     public QFileManagerShell()
@@ -163,27 +185,26 @@ class QFileManagerShell extends Shell
         GridData gridData= new GridData();
         composite.setLayoutData(gridData);
         
-        //label + text + bouton browse
-        Label lblName = new Label(composite, SWT.NONE);
-        lblName.setText("File name");
+        Label lblDir = new Label(composite, SWT.NONE);
+        lblDir.setText("Directory");
         gridData= new GridData();
         gridData.horizontalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = false;
-        lblName.setLayoutData(gridData);
+        lblDir.setLayoutData(gridData);
         
-        final Text textName = new Text(composite, SWT.BORDER);
+        final Text textDir = new Text(composite, SWT.BORDER);
         gridData= new GridData();
         if ( System.getProperty("os.name").startsWith("Linux") )
         {
-            textName.setText("/home/qparrod/workspace/qedit/store/");
+            textDir.setText("/home/qparrod/workspace/qedit/store/");
         }
         else if ( System.getProperty("os.name").startsWith("Windows") )
         {
-            textName.setText("G:/repo_qedit/store/");
+            textDir.setText("G:/repo_qedit/store/");
         }
         
         gridData.horizontalAlignment = GridData.FILL;
-        textName.setLayoutData(gridData);
+        textDir.setLayoutData(gridData);
         
         Button btnBrowse = new Button(composite, SWT.NONE);
         btnBrowse.setText("Browse...");
@@ -191,36 +212,56 @@ class QFileManagerShell extends Shell
             public void widgetSelected(SelectionEvent e)
             {
                 qprint.verbose("Browse");
-                DirectoryDialog dlg = new DirectoryDialog(shell);
-                dlg.setFilterPath(textName.getText());
-                dlg.setText("Directory Dialog");
-                dlg.setMessage("Select a directory");
-                String dir = dlg.open();
-                if (dir != null)
+                DirectoryDialog dd = new DirectoryDialog(shell, SWT.OPEN);
+                dd.setText("Browse...");
+                String s = "";
+                if ( System.getProperty("os.name").startsWith("Linux") )
                 {
-                    textName.setText(dir);
+                    s = "/home/qparrod/workspace/qedit/store/";
                 }
+                else if ( System.getProperty("os.name").startsWith("Windows") )
+                {
+                    s = "G:/repo_qedit/store/";
+                }
+                dd.setFilterPath(s);
+                String selected = dd.open();
+                if (selected != null)
+                {
+                    textDir.setText(selected);
+                }
+                qprint.verbose(selected);
             }
         });
+        
+        Label lblName = new Label(composite, SWT.NONE);
+        lblName.setText("File name");
+        gridData= new GridData();
+        gridData.horizontalAlignment = GridData.FILL;
+        gridData.grabExcessHorizontalSpace = false;
+        lblName.setLayoutData(gridData);
+        final Text textName = new Text(composite, SWT.BORDER);
+        gridData= new GridData();
+        
+        gridData.horizontalAlignment = GridData.FILL;
+        textName.setLayoutData(gridData);
         
         Button btnOk = new Button(composite, SWT.NONE);
         btnOk.setText("OK");
         btnOk.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                qprint.verbose("OK. file=" + textName.getText());
-                Path path = Paths.get(textName.getText());
+                qprint.verbose("OK. dir=" + textDir.getText()+", file=" + textName.getText());
+                Path path = Paths.get(textDir.getText()+textName.getText());
                 qprint.verbose(path.toString());
-                if (path.isAbsolute())
-                {
-                    qprint.verbose("path is absolute");
-                }
-                qprint.verbose(path.getFileName().toString());
-                qprint.verbose("" + path.getNameCount());
-                for (int fileIdx=0;fileIdx<path.getNameCount();fileIdx++)
-                {
-                    //if ()
-                }
+                
+                // TODO : check if path is a correct one
+                
+                file = new QFileType();
+                file.setFileName(path.getFileName().toString());
+                file.setFilePath(path.toString());
+                file.setTimeCreated("0h00");
+                file.setTimeLastOpened("Oh00");
+                shell.dispose();
             }
         });
         
@@ -228,6 +269,12 @@ class QFileManagerShell extends Shell
         shell.open();
         
     }
+    
+    public QFileType getFile()
+    {
+        return file;
+    }
+    
     
     protected void checkSubclass()
     {
