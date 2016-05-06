@@ -8,8 +8,8 @@ public final class QPrint
 {
     private int     level;
     private String  moduleName;
-    private Text    text;
-    private boolean enableDbgTxt = false;
+    private static Text    text;
+    private static boolean enableDbgTxt = false;
     
     public QPrint(String module)
     {
@@ -28,11 +28,14 @@ public final class QPrint
         if ( this.level >= level )
         {
             System.out.println(trace + moduleName + ": " + arg);
-
+            
             if (enableDbgTxt)
             {
-                text.append("\n");
-                text.append(trace + moduleName + ": " + arg);
+                if (text != null )
+                {
+                    text.append("\n");
+                    text.append(trace + moduleName + ": " + arg);
+                }
             }
         }
     }
