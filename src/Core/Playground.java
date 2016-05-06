@@ -32,8 +32,9 @@ import Logging.QPrint;
 //   - add license file
 //   - 
 // DEV FEATURES
-//   - ssh/telnet connection
+//   - ssh/telnet connection to machine
 //   - add/del files in tree
+//   - shortcuts implementation
 
 
 class QPerspective
@@ -44,7 +45,7 @@ class QPerspective
 
 public class Playground
 {
-    private static Text    txtTest;
+    //private static Text    txtTest;
     private static Shell   shlQeditef;
     private static Display display;
     private static Text    text_1;
@@ -236,25 +237,43 @@ public class Playground
         
         final QSsh qssh = new QSsh();
         
+        final Button btnAddConf   = new Button(composite_1, SWT.NONE          );
+        final Text   txtTest      = new Text  (composite_1, SWT.BORDER        | 
+                                                            SWT.READ_ONLY     | 
+                                                            SWT.H_SCROLL      | 
+                                                            SWT.V_SCROLL      | 
+                                                            SWT.CANCEL        | 
+                                                            SWT.MULTI         );
+        final Tree   tree         = new Tree  (composite_1, SWT.BORDER        |
+                                                            SWT.CHECK         | 
+                                                            SWT.FULL_SELECTION);
+        
         /////////////
         // BUTTONS
         /////////////
-        Button btnNewButton = new Button(composite_1, SWT.NONE);
-        btnNewButton.setText("Add Machine");
-        btnNewButton.addSelectionListener(new SelectionAdapter(){
+        btnAddConf.setText("Add Machine");
+        btnAddConf.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
                 // add a new SSH configuration by adding a new machine in list
                 qssh.add();
+                if (!qssh.isCorrect())
+                {
+                    qprint.error("SSH configuration is not good");
+                    return;
+                }
+                
+                QSshConf conf = qssh.getConf();
+                TreeItem trtmMachine = new TreeItem(tree, 0);
+                trtmMachine.setText(conf.getIp());
             }
         });
         gridData = new GridData();
-        btnNewButton.setLayoutData(gridData);
+        btnAddConf.setLayoutData(gridData);
         
         /////////////
         // TEXT
         /////////////
-        txtTest = new Text(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
         txtTest.setText("window to display debug text");
         gridData = new GridData();
         gridData.horizontalSpan            = 1;
@@ -265,16 +284,9 @@ public class Playground
         gridData.grabExcessHorizontalSpace = true;
         txtTest.setLayoutData(gridData);
         
-        
         /////////////
         // TREE
         /////////////
-        Tree tree = new Tree(composite_1, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION);
-        
-        TreeItem trtmMachine = new TreeItem(tree, SWT.NONE);
-        trtmMachine.setGrayed(true);
-        trtmMachine.setText("machine1");
-        
         gridData = new GridData();
         gridData.verticalAlignment         = GridData.FILL;
         gridData.horizontalAlignment       = GridData.FILL;
