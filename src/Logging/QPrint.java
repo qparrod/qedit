@@ -2,10 +2,14 @@ package Logging;
 
 import java.lang.String;
 
+import org.eclipse.swt.widgets.Text;
+
 public final class QPrint
 {
-    private int    level;
-    private String moduleName;
+    private int     level;
+    private String  moduleName;
+    private static Text    text;
+    private static boolean enableDbgTxt = false;
     
     public QPrint(String module)
     {
@@ -24,6 +28,15 @@ public final class QPrint
         if ( this.level >= level )
         {
             System.out.println(trace + moduleName + ": " + arg);
+            
+            if (enableDbgTxt)
+            {
+                if (text != null )
+                {
+                    text.append("\n");
+                    text.append(trace + moduleName + ": " + arg);
+                }
+            }
         }
     }
     
@@ -62,6 +75,12 @@ public final class QPrint
         return moduleName;
     }
     
+    public void configureText(Text text)
+    {
+        qprint(QTrace.VERBOSE, QLevel.VERBOSE, "enable DBG text");
+        enableDbgTxt = true;
+        this.text = text;
+    }
 }
 
 class QLevel

@@ -14,10 +14,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.graphics.Point;
@@ -29,10 +25,27 @@ import org.eclipse.swt.events.KeyEvent;
 
 import Logging.QPrint;
 
+//////////////////////////////////////////////////////
+// GENERAL FEATURES TO DEVELOP
+//   - add doxygen code
+//   - add configuration file
+//   - add license file
+//   - 
+// DEV FEATURES
+//   - ssh/telnet connection to machine
+//   - add/del files in tree
+//   - shortcuts implementation
+
+
+class QPerspective
+{
+    public static boolean DEV  = true;
+    public static boolean NORM = true;
+}
+
 public class Playground
 {
-    private static Text    txtTest;
-    private static Text    text;
+    //private static Text    txtTest;
     private static Shell   shlQeditef;
     private static Display display;
     private static Text    text_1;
@@ -224,25 +237,43 @@ public class Playground
         
         final QSsh qssh = new QSsh();
         
+        final Button btnAddConf   = new Button(composite_1, SWT.NONE          );
+        final Text   txtTest      = new Text  (composite_1, SWT.BORDER        | 
+                                                            SWT.READ_ONLY     | 
+                                                            SWT.H_SCROLL      | 
+                                                            SWT.V_SCROLL      | 
+                                                            SWT.CANCEL        | 
+                                                            SWT.MULTI         );
+        final Tree   tree         = new Tree  (composite_1, SWT.BORDER        |
+                                                            SWT.CHECK         | 
+                                                            SWT.FULL_SELECTION);
+        
         /////////////
         // BUTTONS
         /////////////
-        Button btnNewButton = new Button(composite_1, SWT.NONE);
-        btnNewButton.setText("Add Machine");
-        btnNewButton.addSelectionListener(new SelectionAdapter(){
+        btnAddConf.setText("Add Machine");
+        btnAddConf.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
                 // add a new SSH configuration by adding a new machine in list
                 qssh.add();
+                if (!qssh.isCorrect())
+                {
+                    qprint.error("SSH configuration is not good");
+                    return;
+                }
+                
+                QSshConf conf = qssh.getConf();
+                TreeItem trtmMachine = new TreeItem(tree, 0);
+                trtmMachine.setText(conf.getIp());
             }
         });
         gridData = new GridData();
-        btnNewButton.setLayoutData(gridData);
+        btnAddConf.setLayoutData(gridData);
         
         /////////////
         // TEXT
         /////////////
-        txtTest = new Text(composite_1, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
         txtTest.setText("window to display debug text");
         gridData = new GridData();
         gridData.horizontalSpan            = 1;
@@ -253,16 +284,9 @@ public class Playground
         gridData.grabExcessHorizontalSpace = true;
         txtTest.setLayoutData(gridData);
         
-        
         /////////////
         // TREE
         /////////////
-        Tree tree = new Tree(composite_1, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION);
-        
-        TreeItem trtmMachine = new TreeItem(tree, SWT.NONE);
-        trtmMachine.setGrayed(true);
-        trtmMachine.setText("machine1");
-        
         gridData = new GridData();
         gridData.verticalAlignment         = GridData.FILL;
         gridData.horizontalAlignment       = GridData.FILL;
@@ -273,48 +297,27 @@ public class Playground
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 3
         //////////////////////////////////////////////////////////////////////////////////
+        if ( QPerspective.DEV )
+        {
+            Composite composite_dev = new Composite(tabFolder, SWT.NONE);
+            composite_dev.setLayout(new GridLayout(1, false));
+            
+            TabItem tbtmNotes = new TabItem(tabFolder, SWT.NONE);
+            tbtmNotes.setText("Developer Space");
+            tbtmNotes.setControl(composite_dev);
+            
+            Text text_dev = new Text(composite_dev, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+            gridData = new GridData();
+            gridData.grabExcessHorizontalSpace = true;
+            gridData.horizontalAlignment       = GridData.FILL;
+            gridData.grabExcessVerticalSpace   = true;
+            gridData.verticalAlignment         = GridData.FILL;
+            
+            text_dev.setLayoutData(gridData);
+            text_dev.setText("QEDIT DEBUG CONSOLE\n***************************************");
+            qprint.configureText(text_dev);
+        }
         
-        TabItem tbtmNotes = new TabItem(tabFolder, SWT.NONE);
-        tbtmNotes.setText("Notes");
-        
-        Composite composite_2 = new Composite(tabFolder, SWT.NONE);
-        tbtmNotes.setControl(composite_2);
-        composite_2.setLayout(new FormLayout());
-        
-        text = new Text(composite_2, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-        FormData fd_text = new FormData();
-        fd_text.right = new FormAttachment(100, -52);
-        fd_text.top = new FormAttachment(0, 35);
-        fd_text.left = new FormAttachment(100, -269);
-        text.setLayoutData(fd_text);
-        
-        Label lblNewLabel = new Label(composite_2, SWT.NONE);
-        FormData fd_lblNewLabel = new FormData();
-        fd_lblNewLabel.bottom = new FormAttachment(text, -8);
-        lblNewLabel.setLayoutData(fd_lblNewLabel);
-        lblNewLabel.setText("debug console");
-        
-        Tree tree_1 = new Tree(composite_2, SWT.BORDER);
-        fd_text.bottom = new FormAttachment(tree_1, 0, SWT.BOTTOM);
-        FormData fd_tree_1 = new FormData();
-        fd_tree_1.left = new FormAttachment(0);
-        tree_1.setLayoutData(fd_tree_1);
-        
-        Button btnNewButton_1 = new Button(composite_2, SWT.NONE);
-
-        fd_tree_1.bottom = new FormAttachment(btnNewButton_1, 217, SWT.BOTTOM);
-        fd_tree_1.top = new FormAttachment(btnNewButton_1, 8);
-        btnNewButton_1.setLayoutData(new FormData());
-        btnNewButton_1.setText("Add");
-        
-        Button btnNewButton_2 = new Button(composite_2, SWT.NONE);
-        fd_lblNewLabel.left = new FormAttachment(btnNewButton_2, 144);
-        fd_tree_1.right = new FormAttachment(btnNewButton_2, 77, SWT.RIGHT);
-        FormData fd_btnNewButton_2 = new FormData();
-        fd_btnNewButton_2.top = new FormAttachment(btnNewButton_1, 0, SWT.TOP);
-        fd_btnNewButton_2.left = new FormAttachment(btnNewButton_1, 6);
-        btnNewButton_2.setLayoutData(fd_btnNewButton_2);
-        btnNewButton_2.setText("Copy");
         shlQeditef.open();
         
         while (!shlQeditef.isDisposed())
