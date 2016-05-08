@@ -94,11 +94,11 @@ public final class QPrint
         return moduleName;
     }
     
-    public void configureText(Text text)
+    public void configureText(Text txt)
     {
         qprint(QTrace.VERBOSE, QLevel.VERBOSE, "enable DBG text");
         enableDbgTxt = true;
-        this.text = text;
+        text = txt;
     }
 }
 

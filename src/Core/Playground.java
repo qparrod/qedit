@@ -187,8 +187,10 @@ public class Playground
         //////////////
         tree_2 = new Tree(composite_3, SWT.SINGLE | SWT.BORDER);
         
+        // TODO : find a solution to call it dynamically (every time there is an update in files).
         // open recursively files already present in software repository
-        new QTree(tree_2);
+        QTree qtree = new QTree(tree_2);
+        fileManager.setTree(qtree);
         
         tree_2.addMouseListener(new MouseAdapter() {
             // TODO: create a handler here

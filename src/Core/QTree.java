@@ -31,13 +31,15 @@ import java.lang.System;
 
 public class QTree
 {
-    private Text text;
+    private Tree   tree;
+    private Text   text;
     private QPrint qprint = new QPrint("QTree");
     
     public QTree(Tree tree)
     {
         qprint.verbose("build QTree");
-        this.open(tree);
+        this.tree = tree;
+        this.update();
     }
     
     private void createNode(File root, Tree tree)
@@ -74,13 +76,27 @@ public class QTree
                     createNode(f, file);
                     file.setExpanded(true);
                 }
+                else
+                {
+                    qprint.verbose("adding "+f.getName());
+                }
             }
         }
     }
-
-    public void open(Tree tree)
+    
+    private void deleteNode(File root, Tree tree)
     {
-        qprint.verbose("open tree");
+        TreeItem[] treeItemList = tree.getItems();
+        for (TreeItem t : treeItemList)
+        {
+            t.clearAll(true);
+            t.dispose();
+        }
+    }
+
+    public void update()
+    {
+        qprint.verbose("update tree");
         String ROOT = "";
         if ( System.getProperty("os.name").startsWith("Linux") )
         {
@@ -91,6 +107,13 @@ public class QTree
             ROOT = "G:/repo_qedit/store";
         }
         File root = new File(ROOT);
+        // if treeItems already exist, delete and update
+        if ( tree != null )
+        {
+            deleteNode(root, tree);
+            tree.clearAll(true);
+            
+        }
         createNode(root, tree);
     }
     
