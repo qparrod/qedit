@@ -1,3 +1,22 @@
+// Copyright (C) 2016
+//
+// This file is part of Qedit.
+//
+// Qedit is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Qedit is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Qedit.  If not, see <http://www.gnu.org/licenses/>.
+//
+// author : Quentin Parrod - qparrod@gmail.com
+
 package Core;
 
 import java.io.IOException;
@@ -63,14 +82,15 @@ class QFileType
 
 public class QFileManager
 {
-    // TODO : add a list to save all files open?
-    
+    private QTree qtree;
     private QPrint qprint = new QPrint("QFileManager");
     
     public QFileManager(String root)
     {
         qprint.verbose("create QFileManager in " + root);
     }
+    
+    public void setTree(QTree tree) { this.qtree = tree; }
     
     public void add()
     {
@@ -92,10 +112,19 @@ public class QFileManager
             qprint.error("file is null");
             return;
         }
-        qprint.verbose("add into tree: file="+file.getFileName());
         
-        // TODO : create File and update tree
-        
+        // create a new file and update tree
+        File f = new File(file.getFilePath());
+        try
+        {
+            qprint.verbose("create file "+f.getName());
+            f.createNewFile();
+            qtree.update();
+        } 
+        catch (IOException e)
+        {
+            qprint.error("Imposible to create file");
+        }
     }
     
     public void del()
@@ -227,7 +256,7 @@ class QFileManagerShell extends Shell
                 String selected = dd.open();
                 if (selected != null)
                 {
-                    textDir.setText(selected);
+                    textDir.setText(selected+"/");
                 }
                 qprint.verbose(selected);
             }
@@ -257,10 +286,12 @@ class QFileManagerShell extends Shell
                 // TODO : check if path is a correct one
                 
                 file = new QFileType();
+                qprint.verbose("path="+path.toString());
+                qprint.verbose("name="+path.getFileName().toString());
                 file.setFileName(path.getFileName().toString());
                 file.setFilePath(path.toString());
                 file.setTimeCreated("0h00");
-                file.setTimeLastOpened("Oh00");
+                file.setTimeLastOpened("0h00");
                 shell.dispose();
             }
         });

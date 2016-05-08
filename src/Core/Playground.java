@@ -1,3 +1,22 @@
+// Copyright (C) 2016
+//
+// This file is part of Qedit.
+//
+// Qedit is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Qedit is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Qedit.  If not, see <http://www.gnu.org/licenses/>.
+//
+// author : Quentin Parrod - qparrod@gmail.com
+
 package Core;
 
 import org.eclipse.swt.widgets.Display;
@@ -29,8 +48,7 @@ import Logging.QPrint;
 // GENERAL FEATURES TO DEVELOP
 //   - add doxygen code
 //   - add configuration file
-//   - add license file
-//   - 
+//
 // DEV FEATURES
 //   - ssh/telnet connection to machine
 //   - add/del files in tree
@@ -169,8 +187,10 @@ public class Playground
         //////////////
         tree_2 = new Tree(composite_3, SWT.SINGLE | SWT.BORDER);
         
+        // TODO : find a solution to call it dynamically (every time there is an update in files).
         // open recursively files already present in software repository
-        new QTree(tree_2);
+        QTree qtree = new QTree(tree_2);
+        fileManager.setTree(qtree);
         
         tree_2.addMouseListener(new MouseAdapter() {
             // TODO: create a handler here

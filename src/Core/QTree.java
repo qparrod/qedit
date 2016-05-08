@@ -1,3 +1,22 @@
+// Copyright (C) 2016
+//
+// This file is part of Qedit.
+//
+// Qedit is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Qedit is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Qedit.  If not, see <http://www.gnu.org/licenses/>.
+//
+// author : Quentin Parrod - qparrod@gmail.com
+
 package Core;
 
 import org.eclipse.swt.widgets.Text;
@@ -12,13 +31,15 @@ import java.lang.System;
 
 public class QTree
 {
-    private Text text;
+    private Tree   tree;
+    private Text   text;
     private QPrint qprint = new QPrint("QTree");
     
     public QTree(Tree tree)
     {
         qprint.verbose("build QTree");
-        this.open(tree);
+        this.tree = tree;
+        this.update();
     }
     
     private void createNode(File root, Tree tree)
@@ -55,13 +76,27 @@ public class QTree
                     createNode(f, file);
                     file.setExpanded(true);
                 }
+                else
+                {
+                    qprint.verbose("adding "+f.getName());
+                }
             }
         }
     }
-
-    public void open(Tree tree)
+    
+    private void deleteNode(File root, Tree tree)
     {
-        qprint.verbose("open tree");
+        TreeItem[] treeItemList = tree.getItems();
+        for (TreeItem t : treeItemList)
+        {
+            t.clearAll(true);
+            t.dispose();
+        }
+    }
+
+    public void update()
+    {
+        qprint.verbose("update tree");
         String ROOT = "";
         if ( System.getProperty("os.name").startsWith("Linux") )
         {
@@ -72,6 +107,13 @@ public class QTree
             ROOT = "G:/repo_qedit/store";
         }
         File root = new File(ROOT);
+        // if treeItems already exist, delete and update
+        if ( tree != null )
+        {
+            deleteNode(root, tree);
+            tree.clearAll(true);
+            
+        }
         createNode(root, tree);
     }
     
