@@ -1,5 +1,3 @@
-// Copyright (C) 2016
-//
 // This file is part of Qedit.
 //
 // Qedit is free software: you can redistribute it and/or modify
@@ -14,10 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Qedit.  If not, see <http://www.gnu.org/licenses/>.
-//
-// author : Quentin Parrod - qparrod@gmail.com
 
-package Core;
+package Communication;
+
+import Logging.QPrint;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -31,140 +29,41 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import Logging.QPrint;
-
-public class QSsh
+class QCommType
 {
-    private QPrint   qprint = new QPrint("QSsh");
-    private QSshConf conf;
-    
-    public QSsh()
-    {
-        qprint.verbose("QSsh created");
-    }
-    
-    public QSshConf getConf()
-    {
-        return this.conf;
-    }
-    
-    public void add()
-    {
-        qprint.verbose("Add machine");
-        Display display = Display.getDefault();
-        QSshShell shell = new QSshShell();
-        shell.open();
-        shell.layout();
-        
-        while (!shell.isDisposed())
-        {
-            if (!display.readAndDispatch())
-            {
-                display.sleep();
-            }
-        }
-        
-        if ( null != shell.getConf() )
-        {
-            qprint.verbose("configuration utilisée:" +
-                           "\n\tHost   = " + conf.getIp()+
-                           "\n\tLogin  = " + conf.getLogin()+
-                           "\n\tPasswd = " + conf.getPasswd());
-        }
-    }
-    
-    public boolean isCorrect()
-    {
-        if (null!=conf)
-        {
-            if (conf.getIp().isEmpty()     || 
-                conf.getLogin().isEmpty()  || 
-                conf.getPasswd().isEmpty() )
-            {
-                return false;
-            }
-            
-            //if (conf.getIp().matches("*.*.*.*") )
-                
-            return true;
-        }
-        return false;
-    }
-    
+    public static int QUNDEF  = -1;
+    public static int QSSH    = 0;
+    public static int QTELNET = 1;
+    public static int QSERIAL = 2;
 }
 
-class QConf
+
+
+public class QComm
 {
-    protected String ip;
-    protected String login;
-    protected String passwd;
-    QPrint qprint = new QPrint("QConf");
+    protected boolean   isSsh    = false;
+    protected boolean   isTelnet = false;
+    protected boolean   isSerial = false;
+    private   QCommConf qconf;
+    private   QPrint    qprint   = new QPrint("QComm");
     
-    public QConf()
+    public QComm()
     {
         qprint.verbose("created");
     }
     
-    public void setIp(String ip)      { this.ip     = ip;   }
-    public void setLogin(String name) { this.login  = name; }
-    public void setPasswd(String pw)  { this.passwd = pw;   }
-    public String getIp()     { return this.ip;     }
-    public String getLogin()  { return this.login;  }
-    public String getPasswd() { return this.passwd; }
-}
-
-class QSshConf extends QConf
-{
-    private QPrint qprint = new QPrint("QSshConf");
-    
-    public QSshConf(String ip)
+    public QCommConf getConf()
     {
-        this.ip     = ip;
-        this.login  = "default";
-        this.passwd = "default";
-        qprint.verbose("new SSH configuration");
+        return this.qconf;
     }
     
-    public QSshConf()
+    public void openWindow()
     {
-        this.ip     = "0.0.0.0";
-        this.login  = "default";
-        this.passwd = "default";
-        qprint.verbose("new SSH configuration");
-    }
-}
-
-class QTelnetConf extends QConf
-{
-    QPrint qprint = new QPrint("QTelnetConf");
-    public QTelnetConf()
-    {
-        qprint.verbose("created");
-    }
-}
-
-class QSerialConf extends QConf
-{
-    QPrint qprint = new QPrint("QSerialConf");
-    public QSerialConf()
-    {
-        qprint.verbose("created");
-    }
-}
-
-class QSshShell extends Shell
-{
-    private QSshShell shell;
-    private QConf     conf;
-    private QPrint    qprint = new QPrint("QSshShell");
-    
-    public QSshShell()
-    {
-        shell = this;
+        final Shell shell = new Shell();
         shell.setText("Connection setting");
         shell.setLayout(new GridLayout(2, false));
         
-        Composite composite = new Composite(this.shell, SWT.NONE);
+        Composite composite = new Composite(shell, SWT.NONE);
         composite.setLayout(new GridLayout(3, true));
         GridData gridData= new GridData();
         composite.setLayoutData(gridData);
@@ -177,7 +76,7 @@ class QSshShell extends Shell
             public void widgetSelected(SelectionEvent event)
             {
                 qprint.verbose("ssh chosen");
-                conf = new QSshConf();
+                isSsh = true;
             }
         });
         
@@ -189,7 +88,7 @@ class QSshShell extends Shell
             public void widgetSelected(SelectionEvent event)
             {
                 qprint.verbose("telnet chosen");
-                conf = new QTelnetConf();
+                isTelnet = true;
             }
         });
         
@@ -201,7 +100,7 @@ class QSshShell extends Shell
             public void widgetSelected(SelectionEvent event)
             {
                 qprint.verbose("serial chosen");
-                conf = new QSerialConf();
+                isSerial = true;
             }
         });
 
@@ -265,12 +164,13 @@ class QSshShell extends Shell
             public void widgetSelected(SelectionEvent e)
             {
                 qprint.verbose("OK ");
-                if (null != conf)
-                {
-                    conf.setIp(textName.getText());
-                    conf.setLogin(textLogin.getText());
-                    conf.setPasswd(textPasswd.getText());
-                }
+                qconf = new QCommConf();
+                if (isSsh)    qconf.setType(QCommType.QSSH);
+                if (isTelnet) qconf.setType(QCommType.QTELNET);
+                if (isSerial) qconf.setType(QCommType.QSERIAL);
+                qconf.setIp(textName.getText());
+                qconf.setLogin(textLogin.getText());
+                qconf.setPasswd(textPasswd.getText());
                 shell.dispose();
             }
         });
@@ -284,15 +184,21 @@ class QSshShell extends Shell
                 shell.dispose();
             }
         });
+        
+        shell.open();
+        
+        Display display = Display.getCurrent();
+        
+        while (!shell.isDisposed())
+        {
+            if (!display.readAndDispatch())
+            {
+                display.sleep();
+            }
+        }
     }
     
-    public QConf getConf()
-    {
-        return this.conf;
-    }
-    
-    protected void checkSubclass()
-    {
-        // Disable the check that prevents subclassing of SWT components
-    }
+    public boolean isSsh()    { return isSsh;    }
+    public boolean isTelnet() { return isTelnet; }
+    public boolean isSerial() { return isSerial; }
 }

@@ -42,6 +42,8 @@ import java.nio.file.Paths;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
+import Communication.QComm;
+import Communication.QCommConf;
 import Logging.QPrint;
 
 //////////////////////////////////////////////////////
@@ -50,7 +52,7 @@ import Logging.QPrint;
 //   - add configuration file
 //
 // DEV FEATURES
-//   - ssh/telnet connection to machine
+//   - ssh/telnet connection to machine and architecture
 //   - add/del files in tree
 //   - shortcuts implementation
 
@@ -61,9 +63,8 @@ class QPerspective
     public static boolean NORM = true;
 }
 
-public class Playground
+public class Qedit
 {
-    //private static Text    txtTest;
     private static Shell   shlQeditef;
     private static Display display;
     private static Text    text_1;
@@ -255,7 +256,7 @@ public class Playground
         tbtmMachines.setControl(composite_1);
         composite_1.setLayout(new GridLayout(2, false));
         
-        final QSsh qssh = new QSsh();
+        final QComm qcom = new QComm();
         
         final Button btnAddConf   = new Button(composite_1, SWT.NONE          );
         final Text   txtTest      = new Text  (composite_1, SWT.BORDER        | 
@@ -276,16 +277,20 @@ public class Playground
             public void widgetSelected(SelectionEvent event)
             {
                 // add a new SSH configuration by adding a new machine in list
-                qssh.add();
-                if (!qssh.isCorrect())
+                qcom.openWindow();
+               
+                if (qcom.isSsh())
                 {
-                    qprint.error("SSH configuration is not good");
-                    return;
+                    QCommConf conf = qcom.getConf();
+                    if ( conf != null && conf.isValid() )
+                    {
+                        TreeItem trtmMachine = new TreeItem(tree, 0);
+                        trtmMachine.setText(conf.getIp());
+                        
+                        //QSsh qssh = new QSsh();
+                        //qssh.connect();
+                    }
                 }
-                
-                QSshConf conf = qssh.getConf();
-                TreeItem trtmMachine = new TreeItem(tree, 0);
-                trtmMachine.setText(conf.getIp());
             }
         });
         gridData = new GridData();
