@@ -1,6 +1,6 @@
 package Communication;
 
-import org.apache.commons.net.telnet.TelnetClient;
+//import org.apache.commons.net.telnet.TelnetClient;
 
 import Logging.QPrint;
 
@@ -15,6 +15,6 @@ class QTelnetConf extends QCommConf
     public QTelnetConf()
     {
         qprint.verbose("created");
-        TelnetClient telnet = new TelnetClient(); 
+        //TelnetClient telnet = new TelnetClient(); 
     }
 }

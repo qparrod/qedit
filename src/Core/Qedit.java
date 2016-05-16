@@ -42,9 +42,11 @@ import java.nio.file.Paths;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
+import Handler.QHandler;
+import Logging.QPrint;
 import Communication.QComm;
 import Communication.QCommConf;
-import Logging.QPrint;
+
 
 //////////////////////////////////////////////////////
 // GENERAL FEATURES TO DEVELOP
@@ -63,19 +65,58 @@ class QPerspective
     public static boolean NORM = true;
 }
 
+class QThread
+{
+    // TODO : in main, differentiate threads
+}
+
 public class Qedit
 {
     private static Shell   shlQeditef;
     private static Display display;
     private static Text    text_1;
-    public  static String  ROOT;
+    public  static String  workspace;
     private static Tree    tree_2;
     private static Path    fileSelected;
 
     public static void main(String[] args)
     {
         final QPrint qprint = new QPrint("Main");
-        qprint.verbose("qedit debug mode");
+        qprint.verbose("qedit debug mode.");
+        
+        // open file configuration
+        // TODO
+        for (String arg: args)
+        {
+            if ("" == arg)
+            {
+                if ( System.getProperty("os.name").startsWith("Linux") )
+                {
+                    workspace = "/home/qparrod/workspace/qedit/store/";
+                }
+                else if ( System.getProperty("os.name").startsWith("Windows") )
+                {
+                    workspace = "G:/repo_qedit/store/";
+                }
+            }
+            
+            else
+            {
+                workspace = arg;
+            }
+        }
+        
+        if (null == workspace)
+        {
+            qprint.error("workspace not defined");
+            return;
+        }
+        else
+        {
+            qprint.verbose("workspace is " + workspace.toString());
+        }
+        
+        
         display = Display.getDefault();
         shlQeditef = new Shell();
         shlQeditef.setLayout(new GridLayout(1, false));
@@ -99,15 +140,6 @@ public class Qedit
         composite_3.setLayoutData(gridData);
         qprint.verbose("created composite_3");
         
-        if ( System.getProperty("os.name").startsWith("Linux") )
-        {
-            ROOT = "/home/qparrod/workspace/qedit/store/";
-        }
-        else if ( System.getProperty("os.name").startsWith("Windows") )
-        {
-            ROOT = "G:/repo_qedit/store/";
-        }
-        
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 1
         //////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +150,7 @@ public class Qedit
         //////////////
         // BUTTONS
         //////////////
-        final QFileManager fileManager = new QFileManager(ROOT);
+        final QFileManager fileManager = new QFileManager(workspace);
         SelectionAdapter buttonSelectionAdapter = new SelectionAdapter(){
             public void widgetSelected(SelectionEvent event)
             {
@@ -220,7 +252,7 @@ public class Qedit
             }
             public String findAbsolutePath(TreeItem tree, String path)
             {
-                if ( null == tree.getParentItem() ) { return (ROOT + path); }
+                if ( null == tree.getParentItem() ) { return (workspace + path); }
                 String parent = tree.getParentItem().getText();
                 return findAbsolutePath(tree.getParentItem(), parent + "/"+ path);
             }
@@ -318,6 +350,8 @@ public class Qedit
         gridData.grabExcessVerticalSpace   = true;
         gridData.grabExcessHorizontalSpace = false;
         tree.setLayoutData(gridData);
+        QHandler handler = new QHandler(tree);
+        tree.addMouseListener(handler.listener());
         
         //////////////////////////////////////////////////////////////////////////////////
         // ITEM 3

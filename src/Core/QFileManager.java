@@ -82,11 +82,13 @@ class QFileType
 
 public class QFileManager
 {
-    private QTree qtree;
+    private QTree  qtree;
+    private String workspace;
     private QPrint qprint = new QPrint("QFileManager");
     
     public QFileManager(String root)
     {
+        workspace = root;
         qprint.verbose("create QFileManager in " + root);
     }
     
@@ -156,16 +158,12 @@ public class QFileManager
         Shell shell = new Shell();
         FileDialog fd = new FileDialog(shell, SWT.OPEN);
         fd.setText("Open");
-        String s = "";
-        if ( System.getProperty("os.name").startsWith("Linux") )
+        if (null == workspace)
         {
-            s = "/home/qparrod/workspace/qedit/store/";
+            qprint.error("workspace not defined");
+            return;
         }
-        else if ( System.getProperty("os.name").startsWith("Windows") )
-        {
-            s = "G:/repo_qedit/store/";
-        }
-        fd.setFilterPath(s);
+        fd.setFilterPath(workspace);
         String[] filterExt = {"*.txt","*.log", "*"};
         fd.setFilterExtensions(filterExt);
         String selected = fd.open();
