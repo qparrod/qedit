@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "javac -d bin -cp "../org.eclipse.swt/swt.jar" src/*/*.java"
+javac -d bin -cp "../org.eclipse.swt/swt.jar" src/*/*.java

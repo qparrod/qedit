@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt"/>
+<<<<<<< HEAD
+	<classpathentry kind="lib" path="/home/qparrod/workspace/qedit/linux/jsch-0.1.53.jar"/>
+	<classpathentry kind="lib" path="/home/qparrod/workspace/qedit/linux/commons-net-3.5.jar"/>
+=======
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
+>>>>>>> master
 	<classpathentry kind="output" path="bin"/>
 </classpath>
