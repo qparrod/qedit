@@ -84,6 +84,11 @@ public class Qedit
         System.out.println("Qedit usage:");
         System.out.println("java -jar /path/to/qedit.jar /path/to/workspace");
     }
+    
+    public static void configuration()
+    {
+        
+    }
 
     public static void main(String[] args)
     {
