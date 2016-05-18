@@ -87,7 +87,8 @@ public class Qedit
     
     public static void configuration()
     {
-        
+        // log file
+        // workspace to define
     }
 
     public static void main(String[] args)
