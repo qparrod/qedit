@@ -1,0 +1,4 @@
+#!/bin/bash
+
+jar cmvf manifest.txt  test.jar  bin/*/*.class
+

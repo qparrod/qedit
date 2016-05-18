@@ -137,18 +137,19 @@ public class QFileManager
     public void open(Path file, Text text)
     {
         qprint.verbose("open file "+file.toString());
-        Charset charset = Charset.forName("US-ASCII");
+        Charset charset = Charset.forName("UTF-8");
         try (BufferedReader reader = Files.newBufferedReader(file, charset))
         {
             byte[] encoded = Files.readAllBytes(file);
             String toPrint = new String(encoded, charset);
-            qprint.verbose("toPrint="+toPrint);
+            //qprint.verbose("toPrint="+toPrint);
             if ( null == text ) { return; }
             text.setText(toPrint);
         }
         catch (IOException x)
         {
-            qprint.error("Exception: " + x.getMessage());
+            qprint.error("Problem when opening file " + file.toString());
+            x.printStackTrace();
         }
     }
     

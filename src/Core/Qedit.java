@@ -78,6 +78,12 @@ public class Qedit
     public  static String  workspace;
     private static Tree    tree_2;
     private static Path    fileSelected;
+    
+    public static void usage()
+    {
+        System.out.println("Qedit usage:");
+        System.out.println("java -jar /path/to/qedit.jar /path/to/workspace");
+    }
 
     public static void main(String[] args)
     {
@@ -109,6 +115,7 @@ public class Qedit
         if (null == workspace)
         {
             qprint.error("workspace not defined");
+            usage();
             return;
         }
         else
