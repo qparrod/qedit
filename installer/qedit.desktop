@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Qedit
+GenericName=Qedit
+Comment=qparrod editor project
+Icon=/home/qparrod/Images/qedit.png
+Exec=java -cp "/home/qparrod/workspace/qedit/bin:/home/qparrod/workspace/org.eclipse.swt/swt.jar" Core.Qedit /home/qparrod/workspace/qedit/store/
+Terminal=false
+StartupNotify=false
+Categories=Application

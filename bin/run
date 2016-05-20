@@ -1,4 +1,4 @@
  #!/bin/bash
 
 echo "java -cp "bin:../org.eclipse.swt/swt.jar" Core.Qedit"
-java -cp "bin:../org.eclipse.swt/swt.jar" Core.Qedit /home/qparrod/workspace/qedit/store
+java -cp "bin:../org.eclipse.swt/swt.jar" Core.Qedit /home/qparrod/workspace/qedit/store/
